@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# Explicit QGroundControl MAVLink link for the VM -> macOS setup.
+#
+
+PX4_GCS_HOST_ADDR=${PX4_GCS_HOST_ADDR:=192.168.0.92}
+PX4_GCS_UDP_PORT=${PX4_GCS_UDP_PORT:=14550}
+PX4_GCS_LOCAL_PORT=${PX4_GCS_LOCAL_PORT:=14550}
+
+echo "INFO  [init] Starting explicit QGroundControl MAVLink link to ${PX4_GCS_HOST_ADDR}:${PX4_GCS_UDP_PORT}"
+mavlink start -x -u ${PX4_GCS_LOCAL_PORT} -r 4000000 -t ${PX4_GCS_HOST_ADDR} -o ${PX4_GCS_UDP_PORT}

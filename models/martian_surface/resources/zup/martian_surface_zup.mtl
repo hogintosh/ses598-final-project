@@ -1,0 +1,7 @@
+newmtl martian_surface
+Ka 0.85 0.85 0.85
+Kd 1.0 1.0 1.0
+Ks 0.03 0.03 0.03
+Ns 4
+illum 2
+map_Kd model://martian_surface/resources/zup/martian_surface_basecolor.png

@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# Extra GCS MAVLink link for VM-hosted PX4 SITL talking to QGroundControl on
+# the macOS host. The generic SITL startup creates a localhost-oriented GCS
+# link; this one makes the remote host explicit for bridged VM networking.
+#
+
+PX4_GCS_HOST_ADDR=${PX4_GCS_HOST_ADDR:=192.168.0.92}
+PX4_GCS_UDP_PORT=${PX4_GCS_UDP_PORT:=14550}
+PX4_GCS_LOCAL_PORT=${PX4_GCS_LOCAL_PORT:=14550}
+
+echo "INFO  [init] Starting explicit QGroundControl MAVLink link to ${PX4_GCS_HOST_ADDR}:${PX4_GCS_UDP_PORT}"
+mavlink start -x -u ${PX4_GCS_LOCAL_PORT} -r 4000000 -t ${PX4_GCS_HOST_ADDR} -o ${PX4_GCS_UDP_PORT}
+

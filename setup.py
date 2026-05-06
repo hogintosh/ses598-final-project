@@ -4,6 +4,15 @@ from glob import glob
 
 package_name = 'terrain_mapping_drone_control'
 
+def package_tree(path):
+    data_files = []
+    for root, _, files in os.walk(path):
+        if not files:
+            continue
+        install_dir = os.path.join('share', package_name, root)
+        data_files.append((install_dir, [os.path.join(root, name) for name in files]))
+    return data_files
+
 setup(
     name=package_name,
     version='0.0.1',
@@ -16,6 +25,8 @@ setup(
             glob('launch/*.launch.py')),
         ('share/' + package_name + '/config',
             glob('config/*')),
+        ('share/' + package_name + '/worlds',
+            glob('worlds/*.sdf')),
         ('share/' + package_name + '/models/terrain',
             glob('models/terrain/*.*')),
         ('share/' + package_name + '/models/terrain/meshes',
@@ -32,7 +43,8 @@ setup(
             glob('models/cylinder_small/materials/textures/*.*')),
         ('lib/' + package_name, [
             'terrain_mapping_drone_control/cylinder_landing_node.py',
-            'terrain_mapping_drone_control/aruco_tracker.py'
+            'terrain_mapping_drone_control/aruco_tracker.py',
+            'terrain_mapping_drone_control/rangefinder_terrain_mission.py',
         ]),
         ('share/' + package_name + '/models/cylinder_short',
             glob('models/cylinder_short/*.*')),
@@ -40,7 +52,7 @@ setup(
             glob('models/cylinder_short/materials/*.*')),
         ('share/' + package_name + '/models/cylinder_short/materials/textures',
             glob('models/cylinder_short/materials/textures/*.*')),
-    ],
+    ] + package_tree('models/px4_models') + package_tree('models/nasa_ingenuity') + package_tree('models/martian_surface'),
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='Your Name',
@@ -53,9 +65,16 @@ setup(
             'cylinder_landing_node = terrain_mapping_drone_control.cylinder_landing_node:main',
             'px4_odom_converter = terrain_mapping_drone_control.px4_odom_converter:main',
             'feature_tracker = terrain_mapping_drone_control.feature_tracker:main',
+            'rvio_poc_node = terrain_mapping_drone_control.rvio_poc_node:main',
+            'rvio_evaluator_node = terrain_mapping_drone_control.rvio_evaluator_node:main',
+            'rvio_rqt_plot_launcher = terrain_mapping_drone_control.rvio_rqt_plot_launcher:main',
+            'rvio_rqt_plot_retry = terrain_mapping_drone_control.rvio_rqt_plot_retry:main',
+            'px4_imu_bridge = terrain_mapping_drone_control.px4_imu_bridge_node:main',
+            'openvins_on_state_launcher = terrain_mapping_drone_control.openvins_on_state_launcher:main',
             'pose_visualizer = terrain_mapping_drone_control.pose_visualizer:main',
             'spiral_trajectory = terrain_mapping_drone_control.spiral_trajectory:main',
             'aruco_tracker = terrain_mapping_drone_control.aruco_tracker:main',
+            'rangefinder_terrain_mission = terrain_mapping_drone_control.rangefinder_terrain_mission:main',
         ],
     },
     python_requires='>=3.8'

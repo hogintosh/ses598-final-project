@@ -12,7 +12,9 @@
   <depend>rclpy</depend>
   <depend>px4_msgs</depend>
   <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
   <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
   <depend>ros_gz_bridge</depend>
   <depend>ros_gz_interfaces</depend>
   <depend>rtabmap_ros</depend>
@@ -27,6 +29,7 @@
   <depend>python3-opencv</depend>
   <depend>aruco_ros</depend>
   <depend>aruco_msgs</depend>
+  <exec_depend>ov_msckf</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# @name Gazebo x500 Ingenuity Mars visual
+#
+# @type Quadrotor
+#
+
+PX4_SIM_MODEL=${PX4_SIM_MODEL:=x500_ingenuity_mars}
+PX4_GZ_WORLD=${PX4_GZ_WORLD:=mars_px4}
+
+. ${R}etc/init.d-posix/airframes/4001_gz_x500

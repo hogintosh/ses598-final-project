@@ -70,8 +70,10 @@ echo "Deploying model files to PX4-Autopilot..."
 
 # Copy airframe files
 echo "Copying airframe files..."
-cp "$PACKAGE_DIR/models/px4_models/airframes/4022_gz_x500_depth_mono" \
-   "$PX4_DIR/ROMFS/px4fmu_common/init.d-posix/airframes/"
+for airframe in "$PACKAGE_DIR"/models/px4_models/airframes/402*_gz_*; do
+    [ -f "$airframe" ] || continue
+    cp "$airframe" "$PX4_DIR/ROMFS/px4fmu_common/init.d-posix/airframes/"
+done
 # cp "$PACKAGE_DIR/models/px4_models/airframes/4022_gz_x500_oaklite" \
 #    "$PX4_DIR/ROMFS/px4fmu_common/init.d-posix/airframes/"
 
@@ -84,13 +86,10 @@ fi
 # Copy Gazebo models
 echo "Copying Gazebo models..."
 
-# Copy x500_depth_mono model
-if [ -d "$PACKAGE_DIR/models/px4_models/gz_models/x500_depth_mono" ]; then
-    cp -r "$PACKAGE_DIR/models/px4_models/gz_models/x500_depth_mono" \
-          "$PX4_DIR/Tools/simulation/gz/models/"
-else
-    echo "Warning: x500_depth_mono model not found in package"
-fi
+for model_dir in "$PACKAGE_DIR"/models/px4_models/gz_models/*; do
+    [ -d "$model_dir" ] || continue
+    cp -r "$model_dir" "$PX4_DIR/Tools/simulation/gz/models/"
+done
 
 # Copy OakD-Lite model
 if [ -d "$PACKAGE_DIR/models/OakD-Lite-Modify" ]; then
@@ -98,6 +97,20 @@ if [ -d "$PACKAGE_DIR/models/OakD-Lite-Modify" ]; then
           "$PX4_DIR/Tools/simulation/gz/models/"
 else
     echo "Warning: OakD-Lite model not found in package"
+fi
+
+# Copy Mars visual assets used by the Ingenuity-style PX4 model/world
+for model_name in nasa_ingenuity martian_surface; do
+    if [ -d "$PACKAGE_DIR/models/$model_name" ]; then
+        cp -r "$PACKAGE_DIR/models/$model_name" "$PX4_DIR/Tools/simulation/gz/models/"
+    else
+        echo "Warning: $model_name model not found in package"
+    fi
+done
+
+# Copy custom Gazebo worlds
+if [ -d "$PACKAGE_DIR/worlds" ]; then
+    cp "$PACKAGE_DIR"/worlds/*.sdf "$PX4_DIR/Tools/simulation/gz/worlds/" 2>/dev/null || true
 fi
 
 

@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<sdf version="1.6">
+    <model name="martian_surface">
+        <static>true</static>
+        <!--
+          Use the original Space ROS GLB because Gazebo renders its embedded
+          material/texture reliably. The same mesh is also used for collision
+          so the downward rangefinder raycasts against the rugged surface.
+        -->
+        <pose>0 0 0 0 0 0</pose>
+        <link name="base_link">
+            <collision name="base_link_collision">
+                <geometry>
+                    <mesh>
+                        <uri>model://martian_surface/resources/martian_surface.glb</uri>
+                        <scale>100 100 100</scale>
+                    </mesh>
+                </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>0.8</mu>
+                            <mu2>0.8</mu2>
+                        </ode>
+                    </friction>
+                    <contact>
+                        <ode>
+                            <min_depth>0.001</min_depth>
+                            <max_vel>0</max_vel>
+                        </ode>
+                    </contact>
+                </surface>
+            </collision>
+            <visual name="base_link_visual">
+                <geometry>
+                    <mesh>
+                        <uri>model://martian_surface/resources/martian_surface.glb</uri>
+                        <scale>100 100 100</scale>
+                    </mesh>
+                </geometry>
+            </visual>
+        </link>
+    </model>
+</sdf>
