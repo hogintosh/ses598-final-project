@@ -22,9 +22,6 @@ def generate_launch_description():
     # Get the package share directory
     pkg_share = get_package_share_directory('terrain_mapping_drone_control')
         
-    # Set Gazebo model and resource paths
-    gz_model_path = os.path.join(pkg_share, 'models')
-
     # Add launch arguments
     px4_autopilot_path = LaunchConfiguration('px4_autopilot_path')
     qgc_host_ip = LaunchConfiguration('qgc_host_ip')
@@ -39,12 +36,10 @@ def generate_launch_description():
     px4_make_target = LaunchConfiguration('px4_make_target')
     px4_model_pose = LaunchConfiguration('px4_model_pose')
     model_instance = LaunchConfiguration('model_instance')
-    spawn_cylinders = LaunchConfiguration('spawn_cylinders')
     start_rvio = LaunchConfiguration('start_rvio')
     start_rvio_evaluator = LaunchConfiguration('start_rvio_evaluator')
     start_rvio_rqt_plots = LaunchConfiguration('start_rvio_rqt_plots')
     write_eval_csv = LaunchConfiguration('write_eval_csv')
-    rvio_estimator_mode = LaunchConfiguration('rvio_estimator_mode')
     rvio_backend = LaunchConfiguration('rvio_backend')
     use_discovery_server = LaunchConfiguration('use_discovery_server')
     discovery_server = LaunchConfiguration('discovery_server')
@@ -59,30 +54,6 @@ def generate_launch_description():
     rvio_test_axis_distance = LaunchConfiguration('rvio_test_axis_distance')
     rvio_test_axis_speed = LaunchConfiguration('rvio_test_axis_speed')
     rvio_start_state = LaunchConfiguration('rvio_start_state')
-    rvio_flow_x_sign = LaunchConfiguration('rvio_flow_x_sign')
-    rvio_flow_y_sign = LaunchConfiguration('rvio_flow_y_sign')
-    rvio_camera_mount_roll_rad = LaunchConfiguration('rvio_camera_mount_roll_rad')
-    rvio_camera_mount_pitch_rad = LaunchConfiguration('rvio_camera_mount_pitch_rad')
-    rvio_camera_mount_yaw_rad = LaunchConfiguration('rvio_camera_mount_yaw_rad')
-    rvio_range_feature_use_attitude_projection = LaunchConfiguration(
-        'rvio_range_feature_use_attitude_projection'
-    )
-    rvio_range_feature_lidar_projection_radius_px = LaunchConfiguration(
-        'rvio_range_feature_lidar_projection_radius_px'
-    )
-    rvio_range_feature_reprojection_gate_px = LaunchConfiguration(
-        'rvio_range_feature_reprojection_gate_px'
-    )
-    rvio_camera_body_pitch_rad = LaunchConfiguration('rvio_camera_body_pitch_rad')
-    rvio_lidar_body_pitch_rad = LaunchConfiguration('rvio_lidar_body_pitch_rad')
-    rvio_lidar_body_roll_rad = LaunchConfiguration('rvio_lidar_body_roll_rad')
-    rvio_max_visual_velocity_mps = LaunchConfiguration('rvio_max_visual_velocity_mps')
-    rvio_max_range_feature_velocity_mps = LaunchConfiguration(
-        'rvio_max_range_feature_velocity_mps'
-    )
-    rvio_max_range_feature_pixel_rate_pxps = LaunchConfiguration(
-        'rvio_max_range_feature_pixel_rate_pxps'
-    )
 
     # Start Gazebo separately so PX4 can attach to the already-running world.
     # Gazebo must advance briefly for PX4's world-ready check to pass; a timer
@@ -137,43 +108,6 @@ def generate_launch_description():
         output='screen'
     )
     
-    # Spawn the first cylinder (front, full height)
-    spawn_cylinder_front = Node(
-        package='ros_gz_sim',
-        executable='create',
-        arguments=[
-            '-file', os.path.join(gz_model_path, 'cylinder', 'model.sdf'),
-            '-name', 'cylinder_front',
-            '-x', '5',     # 5 meters in front of the drone
-            '-y', '0',     # centered on y-axis
-            '-z', '0',     # at ground level
-            '-R', '0',     # no roll
-            '-P', '0',     # no pitch
-            '-Y', '0',     # no yaw
-            '-scale', '1 1 1',  # normal scale
-            '-static'      # ensure it's static
-        ],
-        output='screen'
-    )
-
-    # Spawn the second cylinder (behind, 7m height)
-    spawn_cylinder_back = Node(
-        package='ros_gz_sim',
-        executable='create',
-        arguments=[
-            '-file', os.path.join(gz_model_path, 'cylinder_short', 'model.sdf'),
-            '-name', 'cylinder_back',
-            '-x', '-5',    # 5 meters behind the drone
-            '-y', '0',     # centered on y-axis
-            '-z', '0',     # at ground level
-            '-R', '0',     # no roll
-            '-P', '0',     # no pitch
-            '-Y', '0',     # no yaw
-            '-static'      # ensure it's static
-        ],
-        output='screen'
-    )
-
     # Bridge node for camera and odometry
     bridge = Node(
         package='ros_gz_bridge',
@@ -247,44 +181,6 @@ def generate_launch_description():
             'rvio_test_axis_distance': rvio_test_axis_distance,
             'rvio_test_axis_speed': rvio_test_axis_speed,
         }],
-        output='screen'
-    )
-
-    rvio_poc = Node(
-        package='terrain_mapping_drone_control',
-        executable='rvio_poc_node',
-        name='rvio_poc_node',
-        parameters=[{
-            'use_sim_time': True,
-            'image_topic': '/drone/down_mono',
-            'camera_info_topic': '/drone/down_mono/camera_info',
-            'range_topic': '/drone/down_rangefinder',
-            'px4_sensor_combined_topic': '/fmu/out/sensor_combined',
-            'px4_vehicle_attitude_topic': '/fmu/out/vehicle_attitude',
-            'ground_truth_topic': '/sim/ground_truth/vehicle_odometry',
-            'ground_truth_error_z_mode': 'ignore',
-            'estimator_mode': rvio_estimator_mode,
-            'mission_state_topic': '/mission/state',
-            'start_on_mission_state': rvio_start_state,
-            'flow_x_sign': rvio_flow_x_sign,
-            'flow_y_sign': rvio_flow_y_sign,
-            'camera_mount_roll_rad': rvio_camera_mount_roll_rad,
-            'camera_mount_pitch_rad': rvio_camera_mount_pitch_rad,
-            'camera_mount_yaw_rad': rvio_camera_mount_yaw_rad,
-            'range_feature_use_attitude_projection': rvio_range_feature_use_attitude_projection,
-            'range_feature_lidar_projection_radius_px': rvio_range_feature_lidar_projection_radius_px,
-            'range_feature_reprojection_gate_px': rvio_range_feature_reprojection_gate_px,
-            'camera_body_pitch_rad': rvio_camera_body_pitch_rad,
-            'lidar_body_pitch_rad': rvio_lidar_body_pitch_rad,
-            'lidar_body_roll_rad': rvio_lidar_body_roll_rad,
-            'max_visual_velocity_mps': rvio_max_visual_velocity_mps,
-            'max_range_feature_velocity_mps': rvio_max_range_feature_velocity_mps,
-            'max_range_feature_pixel_rate_pxps': rvio_max_range_feature_pixel_rate_pxps,
-        }],
-        condition=IfCondition(PythonExpression([
-            "'", start_rvio, "' in ['1', 'true', 'True'] and '",
-            rvio_backend, "' == 'python'"
-        ])),
         output='screen'
     )
 
@@ -468,10 +364,6 @@ def generate_launch_description():
             default_value='x500_ingenuity_mars_0',
             description='Gazebo model instance name for bridged ground-truth odometry'),
         DeclareLaunchArgument(
-            'spawn_cylinders',
-            default_value='false',
-            description='Set true to spawn the original assignment cylinders'),
-        DeclareLaunchArgument(
             'start_rvio',
             default_value='true',
             description='Start the RVIO proof-of-concept estimator'),
@@ -488,69 +380,9 @@ def generate_launch_description():
             default_value='false',
             description='Also write RVIO evaluator metrics to ~/.ros/rvio_eval; rqt_plot topics are always published'),
         DeclareLaunchArgument(
-            'rvio_estimator_mode',
-            default_value='range_feature_3d',
-            description='RVIO estimator mode, normally range_feature_3d for full 3D translational range-feature pose estimation'),
-        DeclareLaunchArgument(
             'rvio_backend',
             default_value='openvins',
-            description='RVIO backend: openvins for range-feature OpenVINS or python for the legacy proof-of-concept node'),
-        DeclareLaunchArgument(
-            'rvio_flow_x_sign',
-            default_value='-1.0',
-            description='Optical-flow u-axis sign used by RVIO metric conversion'),
-        DeclareLaunchArgument(
-            'rvio_flow_y_sign',
-            default_value='-1.0',
-            description='Optical-flow v-axis sign used by RVIO metric conversion'),
-        DeclareLaunchArgument(
-            'rvio_camera_mount_roll_rad',
-            default_value='0.0',
-            description='Camera mount roll used for optical-flow rotation compensation'),
-        DeclareLaunchArgument(
-            'rvio_camera_mount_pitch_rad',
-            default_value='0.0',
-            description='Camera mount pitch used for optical-flow rotation compensation'),
-        DeclareLaunchArgument(
-            'rvio_camera_mount_yaw_rad',
-            default_value='0.0',
-            description='Camera mount yaw used for optical-flow rotation compensation'),
-        DeclareLaunchArgument(
-            'rvio_range_feature_use_attitude_projection',
-            default_value='true',
-            description='Project the lidar ray into the camera image using camera/lidar body extrinsics before seeding range features'),
-        DeclareLaunchArgument(
-            'rvio_range_feature_lidar_projection_radius_px',
-            default_value='24.0',
-            description='Pixel radius around the projected lidar ray used for range-feature seeding'),
-        DeclareLaunchArgument(
-            'rvio_range_feature_reprojection_gate_px',
-            default_value='8.0',
-            description='Maximum range-feature reprojection residual in pixels allowed into the EKF update'),
-        DeclareLaunchArgument(
-            'rvio_camera_body_pitch_rad',
-            default_value='1.5707963267948966',
-            description='SDF camera-link pitch from body/base_link used for lidar-to-image projection'),
-        DeclareLaunchArgument(
-            'rvio_lidar_body_pitch_rad',
-            default_value='1.5707963267948966',
-            description='SDF rangefinder-link pitch from body/base_link used for lidar-to-image projection'),
-        DeclareLaunchArgument(
-            'rvio_lidar_body_roll_rad',
-            default_value='3.141592653589793',
-            description='SDF rangefinder sensor roll used for lidar ray direction'),
-        DeclareLaunchArgument(
-            'rvio_max_visual_velocity_mps',
-            default_value='4.0',
-            description='Direct-mode only: reject visual updates above this horizontal speed'),
-        DeclareLaunchArgument(
-            'rvio_max_range_feature_velocity_mps',
-            default_value='4.0',
-            description='Direct-mode only: reject individual range-feature flow tracks above this metric speed'),
-        DeclareLaunchArgument(
-            'rvio_max_range_feature_pixel_rate_pxps',
-            default_value='1000.0',
-            description='Reject individual range-feature flow tracks above this pixel rate'),
+            description='RVIO backend. The pruned project keeps openvins as the supported backend.'),
         DeclareLaunchArgument(
             'mission_mode',
             default_value='auto_hover',
@@ -599,27 +431,12 @@ def generate_launch_description():
             condition=IfCondition(start_px4),
         ),
         TimerAction(
-            period=2.0,
-            actions=[spawn_cylinder_front],
-            condition=IfCondition(spawn_cylinders),
-        ),
-        TimerAction(
-            period=2.5,
-            actions=[spawn_cylinder_back],
-            condition=IfCondition(spawn_cylinders),
-        ),
-        TimerAction(
             period=3.0,
             actions=[bridge]
         ),
         TimerAction(
             period=5.0,
             actions=[rangefinder_mission]
-        ),
-        TimerAction(
-            period=5.0,
-            actions=[rvio_poc],
-            condition=IfCondition(start_rvio),
         ),
         TimerAction(
             period=5.0,

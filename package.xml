@@ -3,7 +3,7 @@
 <package format="3">
   <name>terrain_mapping_drone_control</name>
   <version>0.0.1</version>
-  <description>A ROS2 package for controlling PX4 drone in spiral trajectory</description>
+  <description>PX4/Gazebo Mars RVIO evaluation pipeline using OpenVINS range features</description>
   <maintainer email="your.email@example.com">Your Name</maintainer>
   <license>Apache License 2.0</license>
 
@@ -15,21 +15,15 @@
   <depend>nav_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
+  <depend>rcl_interfaces</depend>
   <depend>ros_gz_bridge</depend>
-  <depend>ros_gz_interfaces</depend>
-  <depend>rtabmap_ros</depend>
-  <depend>rtabmap_slam</depend>
-  <depend>rtabmap_viz</depend>
-  <depend>rtabmap_util</depend>
   <depend>rviz2</depend>
-  <depend>robot_state_publisher</depend>
-  <depend>joint_state_publisher</depend>
-  <depend>tf2_ros</depend>
-  <depend>cv_bridge</depend>
-  <depend>python3-opencv</depend>
-  <depend>aruco_ros</depend>
-  <depend>aruco_msgs</depend>
+  <depend>visualization_msgs</depend>
   <exec_depend>ov_msckf</exec_depend>
+  <exec_depend>rqt_image_view</exec_depend>
+  <exec_depend>rqt_plot</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-transforms3d</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
